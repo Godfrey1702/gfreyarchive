@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>YouTube Archive</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-900 p-6">
+  <h1 class="text-3xl  text-blue-500 mb-40 text-center"> Godfrey Archive 📺</h1>
+
+  
+  <div class="mb-6 max-w-md mx-auto">
+    <input
+      type="text"
+      id="searchInput"
+      placeholder="Search videos..."
+      class="w-full p-3 rounded-lg shadow-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    />
+  </div>
+
+  
+  <div id="video-container" class="grid md:grid-cols-1 lg:grid-cols-3 gap-6"></div>
+
+  <script>
+    let allVideos = [];
+
+    const container = document.getElementById("video-container");
+    const searchInput = document.getElementById("searchInput");
+
+    // Render function
+    function renderVideos(videos) {
+      container.innerHTML = ""; // clear previous
+      videos.forEach(video => {
+        const card = document.createElement("div");
+        card.className = "bg-white rounded-xl shadow-md overflow-hidden";
+        card.innerHTML = `
+          <iframe class="w-full aspect-video" src="${video.youtubeUrl}" frameborder="0" allowfullscreen></iframe>
+          <div class="p-4">
+            <h2 class="text-xl font-semibold">${video.title}</h2>
+            <p class="text-sm text-red-400">${video.description}</p>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // Fetch JSON and initialize
+    fetch("videos.json")
+      .then(response => response.json())
+      .then(data => {
+        allVideos = data;
+        renderVideos(allVideos);
+      });
+
+    // Search logic
+    searchInput.addEventListener("input", () => {
+      const keyword = searchInput.value.toLowerCase();
+      const filtered = allVideos.filter(video =>
+        video.title.toLowerCase().includes(keyword) ||
+        video.description.toLowerCase().includes(keyword)
+      );
+      renderVideos(filtered);
+    });
+  </script>
+</body>
+</html>
